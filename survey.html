@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residency Superlatives</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8a96e;
+    --accent2: #e8c98e;
+    --text: #f0ece4;
+    --muted: #8a8580;
+    --danger: #e07070;
+    --success: #70c070;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Libre Franklin', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding-bottom: 6rem;
+  }
+
+  /* noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 7vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 480px;
+  }
+
+  /* VOTER NAME */
+  .voter-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .voter-section label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .voter-section select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 10px 12px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8580' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin-bottom: 2rem;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar-bg {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 1px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* QUESTIONS */
+  .question {
+    display: flex;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    transition: background 0.15s;
+  }
+  .question:first-child { border-top: 1px solid var(--border); }
+  .q-num {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    min-width: 22px;
+    padding-top: 3px;
+    letter-spacing: 0.05em;
+  }
+  .q-body {
+    flex: 1;
+  }
+  .q-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+  .q-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: 13px;
+    padding: 8px 32px 8px 10px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a8580' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .q-select:focus { outline: none; border-color: var(--accent); }
+  .q-select.answered { border-color: #3a3a3a; color: var(--accent2); }
+  .q-select option:disabled { color: #555; }
+
+  /* SUBMIT */
+  .submit-area {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .submit-btn {
+    background: var(--accent);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 3px;
+    padding: 14px 40px;
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+    max-width: 320px;
+  }
+  .submit-btn:hover { background: var(--accent2); }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.35; cursor: default; }
+  .submit-note {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* STATUS MESSAGES */
+  .status-msg {
+    padding: 12px 16px;
+    border-radius: 3px;
+    font-size: 13px;
+    margin-top: 1rem;
+    display: none;
+  }
+  .status-msg.error { background: rgba(224,112,112,0.12); border: 1px solid rgba(224,112,112,0.3); color: var(--danger); display: block; }
+  .status-msg.success { background: rgba(112,192,112,0.12); border: 1px solid rgba(112,192,112,0.3); color: var(--success); display: block; }
+
+  /* SUCCESS STATE */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  .success-screen.visible { display: block; }
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .success-screen p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .survey-form.hidden { display: none; }
+
+  select option { background: #1e1e1e; }
+
+  @media (max-width: 480px) {
+    .header { padding: 2rem 0 1.5rem; }
+    .question { gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-eyebrow">Class of 2026 · Anesthesiology</div>
+    <h1>Residency<br><em>Superlatives</em></h1>
+    <p class="header-sub">27 residents. 27 superlatives. Each person can only be chosen once — choose wisely. Your vote is completely anonymous.</p>
+  </div>
+
+  <div class="survey-form" id="surveyForm">
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progressLabel">0 of 27 assigned</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="submit-area">
+      <div class="submit-note">Each name can only appear once across all your answers.</div>
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Submit Votes</button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <h2>Votes submitted.</h2>
+    <p>Thanks for voting!<br>Results will be revealed at the end of residency.<br><br>
+    <span style="color:var(--muted);font-size:13px;">You can close this tab.</span></p>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Replace this URL with your deployed Google Apps Script web app URL
+const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzhf6RyLFQPbg8PtyXYgy2ySwB9wRwvSeKhjprh6RIM6plOHmyMeDrPAxhIYwsIQBdrPQ/exec";
+
+const NAMES = [
+  "Adam Warrick","Amanda Lima","Amer Mohiuddin","Besong Ashu",
+  "Charles Brimmer","Clarissa Hanna","Dirk Tanis","Hareerat Dhami",
+  "Hem Joshi","Isaac Gluesenkamp","Jenna Jwayyed","Jesse Kestenman",
+  "Luis Garcia","Marissa Stalets","Matthew Gunter","Mitchel Lau",
+  "Monica O'Doherty","Namratha Kolur","Nathan Hollowell","Pedro Amaya",
+  "Reese Miller","Richard Yu","Shruthi Dericks","Stephanie Bolivar",
+  "Teagan Tran","Thomas Knowles","Yoshiki Nishizawa"
+];
+
+const SUPERLATIVES = [
+  "Most Likely to Start a Cult",
+  "Most Likely to Get Banned from a Group Chat",
+  "Most Likely to Accidentally Start Drama",
+  "Most Likely to Text \"I'm on the Way\" While Still in Bed",
+  "Most Likely to Start a Conspiracy Theory",
+  "Most Likely to Join a Pyramid Scheme by Accident",
+  "Most Likely to Google Their Own Name",
+  "Most Likely to Get Asked if They're Old Enough to Be a Doctor",
+  "Most Likely to Send a Med Student Home Before 8 AM",
+  "Most Likely to Make a Med Student Stay Past 3 PM",
+  "Most Likely to Place an A-line Blind Then Ask for an Ultrasound 10 Minutes Later",
+  "Most Likely to Befriend Every Surgeon",
+  "Most Likely to Argue with Every Surgeon",
+  "Most Likely to Stay Calm While Everything Is on Fire",
+  "Most Likely to Give Their Patient Breakfast to Get Out of the Case",
+  "Most Likely to Turn Up the Room Temp When the Patient's Fine but They're Cold",
+  "Most Likely to Tell a Surgeon How to Manage Their Patient",
+  "Most Likely to Have a Completely Different Personality Post-Call",
+  "Most Likely to Order Something Healthy and Then Eat Someone Else's Fries",
+  "Most Likely to Have a Side Hustle",
+  "Most Likely to Say \"Kobe\" Then Blow the IV",
+  "Most Likely to Sign a Contract in the Arctic Circle Because the Salary Is Too Good to Pass On",
+  "Most Likely to Have Beef with Greg",
+  "Most Likely to Get Written Up on OB",
+  "Most Likely to Turn the Volume Up on Plamen's House Music During a Liver",
+  "Most Likely to Push Saline When Goggins Asks for More Roc",
+  "Most Likely to Say Two Words to You All of Residency Then One Day Reveal That Before Med School They Were a Tattoo Artist in Brooklyn"
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let answers = {}; // { qIndex: name }
+
+// ── BUILD UI ─────────────────────────────────────────────────────────────────
+function init() {
+  // Build questions
+  const container = document.getElementById("questionsContainer");
+  SUPERLATIVES.forEach((sup, i) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `
+      <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="q-body">
+        <div class="q-title">${sup}</div>
+        <select class="q-select" id="q${i}" onchange="handleSelect(${i}, this.value)">
+          <option value="">— Choose a resident —</option>
+        </select>
+      </div>`;
+    container.appendChild(div);
+  });
+
+  refreshAllDropdowns();
+}
+
+// ── DROPDOWN LOGIC ────────────────────────────────────────────────────────────
+function getUsedNames() {
+  return new Set(Object.values(answers));
+}
+
+function refreshAllDropdowns() {
+  const used = getUsedNames();
+  const answered = Object.keys(answers).length;
+
+  SUPERLATIVES.forEach((_, i) => {
+    const sel = document.getElementById(`q${i}`);
+    const currentVal = answers[i] || "";
+
+    // Rebuild options
+    sel.innerHTML = `<option value="">— Choose a resident —</option>`;
+    NAMES.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      // Disable if used by a different question
+      if (used.has(name) && name !== currentVal) {
+        opt.disabled = true;
+        opt.textContent = name + " ✓";
+      }
+      if (name === currentVal) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    sel.classList.toggle("answered", !!currentVal);
+  });
+
+  // Update progress
+  const pct = Math.round((answered / SUPERLATIVES.length) * 100);
+  document.getElementById("progressLabel").textContent = `${answered} of ${SUPERLATIVES.length} assigned`;
+  document.getElementById("progressPct").textContent = `${pct}%`;
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
+function handleSelect(qIdx, val) {
+  if (val === "") {
+    delete answers[qIdx];
+  } else {
+    answers[qIdx] = val;
+  }
+  refreshAllDropdowns();
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+async function handleSubmit() {
+  const msg = document.getElementById("statusMsg");
+  msg.className = "status-msg";
+  msg.textContent = "";
+
+  if (Object.keys(answers).length === 0) {
+    msg.className = "status-msg error";
+    msg.textContent = "Please assign at least one superlative before submitting.";
+    return;
+  }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  // Build payload
+  const payload = { voter: "anonymous", answers: {} };
+  SUPERLATIVES.forEach((sup, i) => {
+    payload.answers[sup] = answers[i] || "";
+  });
+
+  try {
+    await fetch(SUBMIT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    // no-cors means we can't read the response, but if it didn't throw we assume success
+    document.getElementById("surveyForm").classList.add("hidden");
+    document.getElementById("successScreen").classList.add("visible");
+  } catch (err) {
+    msg.className = "status-msg error";
+    msg.textContent = "Something went wrong. Please try again or contact the organizer.";
+    btn.disabled = false;
+    btn.textContent = "Submit Votes";
+  }
+}
+
+init();
+</script>
+</body>
+</html>
